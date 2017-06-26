@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class Joystick : MonoBehaviour {
+public class Joystick : MonoBehaviour
+{
     //事件
     public Action OnTouchDown;
-    public Action<float,float> OnTouchMove;//p1:angle360 0~360 p2:power 0~1
+    public Action<float, float> OnTouchMove;//p1:angle360 0~360 p2:power 0~1
     public Action OnTouchUp;
 
     //Untiy 指定参数
@@ -14,7 +15,7 @@ public class Joystick : MonoBehaviour {
     public float controlRadius = 200.0f;//移动半径（UGUI像素）
     public Rect touchArea = new Rect(0, 0, 1f, 1f);//0~1
     public float replaceTime = 0.1f;
-    
+
     private Vector3 touchOrigin;//按下原点（Input.mousePosition）
     private float scaleFactor;//Screen 2 Canvas 的转换因子
 
@@ -31,8 +32,9 @@ public class Joystick : MonoBehaviour {
     private Vector3 selfReplaceSpd;
     private Vector3 ctrlReplaceSpd;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         self = transform;
         selfDefaultPosition = self.position;
 
@@ -41,10 +43,21 @@ public class Joystick : MonoBehaviour {
         scaleFactor = canvas.scaleFactor;
 
         ctrlDefaultLocalPos = control.transform.localPosition;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    public void OnDisable()
+    {
+        //恢复默认状态
+        isOnArea = false;
+        isDragged = false;
+        isReplace = false;
+
+        ReplaceImmediate();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         //按下
         if (Input.GetMouseButtonDown(0))
         {
@@ -78,7 +91,7 @@ public class Joystick : MonoBehaviour {
                 control.transform.localPosition = ctrlDefaultLocalPos;
             }
         }
-	}
+    }
 
     private void TouchDown()
     {
@@ -148,12 +161,21 @@ public class Joystick : MonoBehaviour {
         }
         else
         {
-            self.position = selfDefaultPosition;
-            control.transform.localPosition = ctrlDefaultLocalPos;
+            ReplaceImmediate();
         }
 
 
         if (OnTouchUp != null)
             OnTouchUp();
+
+    }
+
+    /// <summary>
+    /// 立即复位
+    /// </summary>
+    public void ReplaceImmediate()
+    {
+        self.position = selfDefaultPosition;
+        control.transform.localPosition = ctrlDefaultLocalPos;
     }
 }
