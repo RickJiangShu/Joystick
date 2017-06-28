@@ -1,10 +1,10 @@
-﻿操纵杆
+-- 如何使用
+···
+float mx = Mathf.Cos(data.radians) * speed * Time.deltaTime * data.power;
+float mz = Mathf.Sin(data.radians) * speed * Time.deltaTime * data.power;
+target.transform.Translate(mx, 0, mz);
+···
 
-## 设计思路  
-1、通过Input监听点击输入；
-2、根据移动位置与原点的夹角判断角度；
-3、移动距离 在Screen 与 UGUI 之间做个转换
+[Example](https://github.com/RickJiangShu/Joystick-Example "Example")
 
-
-## 相关定义
-control n.控制键（随着手指移动的对象）
+-- 演示
