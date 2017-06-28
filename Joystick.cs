@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
+/// <summary>
+/// 虚拟摇杆
+/// github：https://github.com/RickJiangShu/Joystick
+/// </summary>
 public class Joystick : MonoBehaviour
 {
     //事件
     public Action OnTouchDown;
-    public Action<float, float> OnTouchMove;//p1:angle360 0~360 p2:power 0~1
+    public Action<JoystickData> OnTouchMove;
     public Action OnTouchUp;
 
     //Untiy 指定参数
@@ -15,6 +19,9 @@ public class Joystick : MonoBehaviour
     public float controlRadius = 200.0f;//移动半径（UGUI像素）
     public Rect touchArea = new Rect(0, 0, 1f, 1f);//0~1
     public float replaceTime = 0.1f;
+
+    //data
+    public JoystickData data = new JoystickData();
 
     private Vector3 touchOrigin;//按下原点（Input.mousePosition）
     private float scaleFactor;//Screen 2 Canvas 的转换因子
@@ -141,11 +148,11 @@ public class Joystick : MonoBehaviour
         //派发事件
         if (OnTouchMove != null)
         {
-            float power = distance / controlRadius;
-            float angle = radians * Mathf.Rad2Deg;
-            float angle360 = angle < 0 ? 360 + angle : angle;
-
-            OnTouchMove(angle360, power);
+            data.power = distance / controlRadius;
+            data.radians = radians;
+            data.angle = radians * Mathf.Rad2Deg;
+            data.angle360 = data.angle < 0 ? 360 + data.angle : data.angle;
+            OnTouchMove(data);
         }
     }
     private void TouchUp()
