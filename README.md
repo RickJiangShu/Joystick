@@ -1,14 +1,14 @@
 # 如何使用
 1、只需要2个GameObject，Joystick通常为背景，Control通常为前景；  
-![Joystick1](https://raw.githubusercontent.com/RickJiangShu/Joystick-Example/master/Poster/Joystick1.jpg "Joystick1")
-
+![Joystick1](https://raw.githubusercontent.com/RickJiangShu/Joystick-Example/master/Poster/Joystick1.jpg "Joystick1")  
+  
 2、设置参数  
-![Joystick2](https://raw.githubusercontent.com/RickJiangShu/Joystick-Example/master/Poster/Joystick2.jpg "Joystick2")
+![Joystick2](https://raw.githubusercontent.com/RickJiangShu/Joystick-Example/master/Poster/Joystick2.jpg "Joystick2")  
 Control 控制对象（前景）  
 Control Radius 控制半径（像素）  
 Touch Area 控制区域（w和h为1，即全屏）  
 Replace Time 复位缓动时间  
-
+  
 3、侦听事件  
 ```
 joystick.OnTouchMove += OnJoystickMove;
