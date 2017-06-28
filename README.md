@@ -21,7 +21,11 @@ private void OnJoystickMove(JoystickData data)
 }
 ```  
   
-[Example](https://github.com/RickJiangShu/Joystick-Example "Example")
-  
+
+
+# Example
+[演示项目](https://github.com/RickJiangShu/Joystick-Example "Example")  
+  
+  
 # 演示GIF
 ![Joystick3](https://raw.githubusercontent.com/RickJiangShu/Joystick-Example/master/Poster/Joystick-example.gif "Joystick3")
