@@ -30,6 +30,7 @@ public class Joystick : MonoBehaviour
     private Vector3 selfDefaultPosition;
     private Vector3 ctrlDefaultLocalPos;//control的默认位置
 
+    private bool enabled = true;//是否启用
     private bool isOnArea = false;//是否点击在区域上
     private bool isDragged = false;//是否正在拖拽
     private bool isReplace = false;//是否正在复位
@@ -54,17 +55,15 @@ public class Joystick : MonoBehaviour
 
     public void OnDisable()
     {
-        //恢复默认状态
-        isOnArea = false;
-        isDragged = false;
-        isReplace = false;
-
-        ReplaceImmediate();
+        Reset();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!enabled)
+            return;
+
         //按下
         if (Input.GetMouseButtonDown(0))
         {
@@ -178,6 +177,18 @@ public class Joystick : MonoBehaviour
     }
 
     /// <summary>
+    /// 重置状态
+    /// </summary>
+    public void Reset()
+    {
+        isOnArea = false;
+        isDragged = false;
+        isReplace = false;
+
+        ReplaceImmediate();
+    }
+
+    /// <summary>
     /// 立即复位
     /// </summary>
     public void ReplaceImmediate()
@@ -185,4 +196,19 @@ public class Joystick : MonoBehaviour
         self.position = selfDefaultPosition;
         control.transform.localPosition = ctrlDefaultLocalPos;
     }
+
+
+    /// <summary>
+    /// 启用开关（SetActive是彻底看不见，这个是看得见但是无法操作）
+    /// </summary>
+    public bool Enabled
+    {
+        get { return enabled; }
+        set
+        {
+            enabled = value;
+            Reset();
+        }
+    }
+
 }
