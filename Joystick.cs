@@ -30,6 +30,7 @@ public class Joystick : MonoBehaviour
     private Vector3 selfDefaultPosition;
     private Vector3 ctrlDefaultLocalPos;//control的默认位置
 
+    private bool isStarted = false;
     private bool enabled = true;//是否启用
     private bool isOnArea = false;//是否点击在区域上
     private bool isDragged = false;//是否正在拖拽
@@ -51,11 +52,14 @@ public class Joystick : MonoBehaviour
         scaleFactor = canvas.scaleFactor;
 
         ctrlDefaultLocalPos = control.transform.localPosition;
+
+        isStarted = true;
     }
 
     public void OnDisable()
     {
-        Reset();
+        if(isStarted)
+            Reset();
     }
 
     // Update is called once per frame
