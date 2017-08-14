@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 虚拟摇杆
@@ -31,10 +32,12 @@ public class Joystick : MonoBehaviour
     private Vector3 ctrlDefaultLocalPos;//control的默认位置
 
     private bool isStarted = false;
-    private bool enabled = true;//是否启用
     private bool isOnArea = false;//是否点击在区域上
     private bool isDragged = false;//是否正在拖拽
     private bool isReplace = false;//是否正在复位
+
+    public bool enabled = true;//false = 看得见，无法操作
+    public bool visible = true;//false = 看不见，可以操作
 
     //复位
     private float replaceCount = 0f;
@@ -52,6 +55,9 @@ public class Joystick : MonoBehaviour
         scaleFactor = canvas.scaleFactor;
 
         ctrlDefaultLocalPos = control.transform.localPosition;
+
+        Enabled = enabled;
+        Visible = visible;
 
         isStarted = true;
     }
@@ -212,6 +218,18 @@ public class Joystick : MonoBehaviour
         {
             enabled = value;
             Reset();
+        }
+    }
+
+    public bool Visible
+    {
+        get { return visible; }
+        set
+        {
+            visible = value;
+
+            self.GetComponent<Image>().enabled = visible;
+            control.GetComponent<Image>().enabled = visible;
         }
     }
 
