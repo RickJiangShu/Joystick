@@ -19,7 +19,6 @@ public class Joystick : MonoBehaviour
     public GameObject control;//移动对象
     public float controlRadius = 200.0f;//移动半径（UGUI像素）
     public Rect touchArea = new Rect(0, 0, 1f, 1f);//0~1
-    public float replaceTime = 0.1f;
 
     //data
     public JoystickData data = new JoystickData();
@@ -34,15 +33,10 @@ public class Joystick : MonoBehaviour
     private bool isStarted = false;
     private bool isOnArea = false;//是否点击在区域上
     private bool isDragged = false;//是否正在拖拽
-    private bool isReplace = false;//是否正在复位
 
-    public bool enabled = true;//false = 看得见，无法操作
-    public bool visible = true;//false = 看不见，可以操作
-
-    //复位
-    private float replaceCount = 0f;
-    private Vector3 selfReplaceSpd;
-    private Vector3 ctrlReplaceSpd;
+    public bool m_enabled = true;//false = 看得见，无法操作
+    public bool m_visible = true;//false = 看不见，可以操作
+    public bool locked = false;//锁定self位置
 
     // Use this for initialization
     void Start()
@@ -54,10 +48,19 @@ public class Joystick : MonoBehaviour
         Canvas canvas = control.GetComponentInParent<Canvas>();
         scaleFactor = canvas.scaleFactor;
 
+        //转换touchArea
+        if (touchArea.width > 1 || touchArea.height > 1)
+        {
+            touchArea.x = touchArea.x * scaleFactor / Screen.width;
+            touchArea.y = touchArea.y * scaleFactor / Screen.height;
+            touchArea.width = touchArea.width * scaleFactor / Screen.width;
+            touchArea.height = touchArea.height * scaleFactor / Screen.height;
+        }
+
         ctrlDefaultLocalPos = control.transform.localPosition;
 
-        Enabled = enabled;
-        Visible = visible;
+        enabled = m_enabled;
+        visible = m_visible;
 
         isStarted = true;
     }
@@ -71,7 +74,7 @@ public class Joystick : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!enabled)
+        if (!m_enabled)
             return;
 
         //按下
@@ -92,21 +95,6 @@ public class Joystick : MonoBehaviour
             TouchUp();
         }
 
-        //复位
-        if (isReplace)
-        {
-            replaceCount += Time.deltaTime;
-            if (replaceCount < replaceTime)
-            {
-                self.position += selfReplaceSpd * Time.deltaTime;
-                control.transform.localPosition += ctrlReplaceSpd * Time.deltaTime;
-            }
-            else
-            {
-                self.position = selfDefaultPosition;
-                control.transform.localPosition = ctrlDefaultLocalPos;
-            }
-        }
     }
 
     private void TouchDown()
@@ -117,9 +105,10 @@ public class Joystick : MonoBehaviour
         if (!isOnArea)
             return;
 
-        isReplace = false;
         touchOrigin = touchPosition;
-        self.position = touchOrigin;
+        
+        if(!locked)
+            self.position = touchOrigin;
 
         if (OnTouchDown != null)
             OnTouchDown();
@@ -168,17 +157,7 @@ public class Joystick : MonoBehaviour
     {
         isOnArea = false;
         isDragged = false;
-        if (replaceTime > 0f)
-        {
-            isReplace = true;
-            replaceCount = 0f;
-            selfReplaceSpd = (selfDefaultPosition - self.position) / replaceTime;
-            ctrlReplaceSpd = (ctrlDefaultLocalPos - control.transform.localPosition) / replaceTime;
-        }
-        else
-        {
-            ReplaceImmediate();
-        }
+        ReplaceImmediate();
 
 
         if (OnTouchUp != null)
@@ -193,7 +172,6 @@ public class Joystick : MonoBehaviour
     {
         isOnArea = false;
         isDragged = false;
-        isReplace = false;
 
         ReplaceImmediate();
     }
@@ -203,7 +181,9 @@ public class Joystick : MonoBehaviour
     /// </summary>
     public void ReplaceImmediate()
     {
-        self.position = selfDefaultPosition;
+        if(!locked)
+            self.position = selfDefaultPosition;
+
         control.transform.localPosition = ctrlDefaultLocalPos;
     }
 
@@ -211,25 +191,25 @@ public class Joystick : MonoBehaviour
     /// <summary>
     /// 启用开关（SetActive是彻底看不见，这个是看得见但是无法操作）
     /// </summary>
-    public bool Enabled
+    public bool enabled
     {
-        get { return enabled; }
+        get { return m_enabled; }
         set
         {
-            enabled = value;
+            m_enabled = value;
             Reset();
         }
     }
 
-    public bool Visible
+    public bool visible
     {
-        get { return visible; }
+        get { return m_visible; }
         set
         {
-            visible = value;
+            m_visible = value;
 
-            self.GetComponent<Image>().enabled = visible;
-            control.GetComponent<Image>().enabled = visible;
+            self.GetComponent<Image>().enabled = m_visible;
+            control.GetComponent<Image>().enabled = m_visible;
         }
     }
 
