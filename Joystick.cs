@@ -56,13 +56,12 @@ public class Joystick : MonoBehaviour
             touchArea.width = touchArea.width * scaleFactor / Screen.width;
             touchArea.height = touchArea.height * scaleFactor / Screen.height;
         }
-
         ctrlDefaultLocalPos = control.transform.localPosition;
+        isStarted = true;
 
         enabled = m_enabled;
         visible = m_visible;
 
-        isStarted = true;
     }
 
     public void OnDisable()
@@ -105,10 +104,16 @@ public class Joystick : MonoBehaviour
         if (!isOnArea)
             return;
 
-        touchOrigin = touchPosition;
-        
-        if(!locked)
+
+        if (!locked)
+        {
+            touchOrigin = touchPosition;
             self.position = touchOrigin;
+        }
+        else
+        {
+            touchOrigin = control.transform.position;
+        }
 
         if (OnTouchDown != null)
             OnTouchDown();
@@ -118,15 +123,15 @@ public class Joystick : MonoBehaviour
         if (!isOnArea)
             return;
 
-        Vector3 touch = touchOrigin / scaleFactor;
+        Vector3 origin = touchOrigin / scaleFactor;
         Vector3 now = Input.mousePosition / scaleFactor;
-        float distance = Vector3.Distance(now, touch);
+        float distance = Vector3.Distance(now, origin);
         if (distance < 0.01f)
             return;
 
         isDragged = true;
 
-        Vector3 direction = now - touch;
+        Vector3 direction = now - origin;
         float radians = Mathf.Atan2(direction.y, direction.x);
 
         //移动摇杆
@@ -197,7 +202,11 @@ public class Joystick : MonoBehaviour
         set
         {
             m_enabled = value;
-            Reset();
+
+            if (isStarted)
+            {
+                Reset();
+            }
         }
     }
 
@@ -208,8 +217,11 @@ public class Joystick : MonoBehaviour
         {
             m_visible = value;
 
-            self.GetComponent<Image>().enabled = m_visible;
-            control.GetComponent<Image>().enabled = m_visible;
+            if (isStarted)
+            {
+                self.GetComponent<Image>().enabled = m_visible;
+                control.GetComponent<Image>().enabled = m_visible;
+            }
         }
     }
 
